@@ -167,14 +167,14 @@ test('the paths check fails a file the export allowlist does not include, or exc
     );
 });
 
-function gitRepository(files, message, identity = IDENTITY) {
+function gitRepository(files, message, identity = IDENTITY, committer = identity) {
     const directory = tree(files);
     const env = {
         ...process.env,
         GIT_AUTHOR_NAME: identity.name,
         GIT_AUTHOR_EMAIL: identity.email,
-        GIT_COMMITTER_NAME: identity.name,
-        GIT_COMMITTER_EMAIL: identity.email,
+        GIT_COMMITTER_NAME: committer.name,
+        GIT_COMMITTER_EMAIL: committer.email,
         GIT_CONFIG_GLOBAL: '/dev/null',
         GIT_CONFIG_NOSYSTEM: '1',
     };
@@ -184,6 +184,7 @@ function gitRepository(files, message, identity = IDENTITY) {
             env,
         });
         assert.equal(result.status, 0, result.stderr);
+        return result.stdout.trim();
     }
     run(['init', '-q', '-b', 'main']);
     run(['add', '-A']);
@@ -238,7 +239,98 @@ test('the config pins both tool images by version and digest, and every allowed 
     for (const entry of [...CONFIG.allow, ...CONFIG.binaryAllowlist]) {
         assert.ok(typeof entry.reason === 'string' && entry.reason.length > 10, JSON.stringify(entry));
     }
+    const historyShas = new Set();
+    for (const entry of CONFIG.historyIdentityExceptions) {
+        assert.match(entry.sha, /^[0-9a-f]{40}$/u);
+        assert.ok(!historyShas.has(entry.sha), `duplicate history exception: ${entry.sha}`);
+        assert.ok(typeof entry.reason === 'string' && entry.reason.length > 10, JSON.stringify(entry));
+        historyShas.add(entry.sha);
+    }
     assert.equal(CONFIG.maxFileBytes, 5_000_000);
+});
+
+test('the history check validates author and committer separately and accepts GitHub only as committer', () => {
+    const github = { name: 'GitHub', email: 'noreply@github.com' };
+    const someone = { name: 'Someone', email: 'someone@users.noreply.github.com' };
+    const cases = [
+        { author: IDENTITY, committer: github, hits: [] },
+        { author: github, committer: IDENTITY, hits: ['the author is "GitHub <noreply@github.com>"'] },
+        { author: someone, committer: github, hits: [`the author is "Someone <${someone.email}>"`] },
+        { author: IDENTITY, committer: someone, hits: [`the committer is "Someone <${someone.email}>"`] },
+        {
+            author: { ...IDENTITY, name: 'Someone' },
+            committer: IDENTITY,
+            hits: [`the author is "Someone <${IDENTITY.email}>"`],
+        },
+        {
+            author: IDENTITY,
+            committer: { ...IDENTITY, email: someone.email },
+            hits: [`the committer is "${IDENTITY.name} <${someone.email}>"`],
+        },
+    ];
+    for (const entry of cases) {
+        const repository = gitRepository({ 'a.txt': 'a\n' }, 'first', entry.author, entry.committer);
+        try {
+            assert.deepEqual(
+                historyFindings(repository.directory, CONFIG, []).map((finding) => finding.hit),
+                entry.hits,
+            );
+        } finally {
+            rmSync(repository.directory, { recursive: true, force: true });
+        }
+    }
+});
+
+test('a history identity exception requires the full SHA and does not authorize an unlisted descendant', () => {
+    const someone = { name: 'Someone', email: 'someone@users.noreply.github.com' };
+    const repository = gitRepository({ 'a.txt': 'a\n' }, 'first', someone);
+    try {
+        const sha = repository.run(['rev-parse', 'HEAD']);
+        const config = {
+            ...CONFIG,
+            historyIdentityExceptions: [{ sha, reason: 'a reviewed published commit' }],
+        };
+        assert.deepEqual(historyFindings(repository.directory, config, []), []);
+        const abbreviated = {
+            ...config,
+            historyIdentityExceptions: [{ sha: sha.slice(0, 12), reason: 'an abbreviated commit identifier' }],
+        };
+        assert.equal(historyFindings(repository.directory, abbreviated, []).length, 2);
+        repository.run(['commit', '-q', '--allow-empty', '-m', 'second']);
+        const descendant = repository.run(['rev-parse', 'HEAD']);
+        assert.deepEqual(historyFindings(repository.directory, config, []), [
+            { check: 'history', path: descendant, hit: `the author is "Someone <${someone.email}>"` },
+            { check: 'history', path: descendant, hit: `the committer is "Someone <${someone.email}>"` },
+        ]);
+    } finally {
+        rmSync(repository.directory, { recursive: true, force: true });
+    }
+});
+
+test('a history identity exception still scans the commit message and rejects trailers', () => {
+    const someone = { name: 'Someone', email: 'someone@users.noreply.github.com' };
+    const repository = gitRepository(
+        { 'a.txt': 'a\n' },
+        'first\n\nContact someone@company.io.\n\nReviewed-By: Someone',
+        someone,
+    );
+    try {
+        const sha = repository.run(['rev-parse', 'HEAD']);
+        const report = auditOpenTree(repository.directory, {
+            containers: false,
+            history: true,
+            config: {
+                ...CONFIG,
+                historyIdentityExceptions: [{ sha, reason: 'a reviewed published identity' }],
+            },
+        });
+        assert.deepEqual(report.findings, [
+            { check: 'history', path: sha, hit: 'the commit message ends in a trailer' },
+            { check: 'history', path: sha, hit: 'the commit message holds "someone@company.io" (email)' },
+        ]);
+    } finally {
+        rmSync(repository.directory, { recursive: true, force: true });
+    }
 });
 
 test('the history check accepts the identity and listed commits, and refuses any other identity', () => {

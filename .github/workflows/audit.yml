@@ -6,7 +6,7 @@ name: audit
 # pins both tools' images; they run without network.
 on:
     push:
-        branches: [main]
+        branches: [main, 'research/**']
     pull_request:
 
 permissions:
