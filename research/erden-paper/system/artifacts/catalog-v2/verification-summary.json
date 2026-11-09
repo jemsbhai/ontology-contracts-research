@@ -1,0 +1,2187 @@
+{
+  "completedUtc": "2026-11-01T05:21:48.831Z",
+  "runName": "catalog-v2",
+  "providerChecks": [
+    {
+      "id": "common-1.0.0",
+      "outcome": "passed",
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "catalog-1.0.0",
+      "outcome": "passed",
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "catalog-1.1.0",
+      "outcome": "passed",
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "catalog-1.2.0",
+      "outcome": "passed",
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "catalog-1.3.0",
+      "outcome": "passed",
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "catalog-1.4.0",
+      "outcome": "passed",
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "catalog-1.5.0",
+      "outcome": "failed",
+      "reasoningOutcome": "refused",
+      "negativeOutcome": {
+        "outcome": "refused",
+        "reason": "incomplete-certificate"
+      }
+    }
+  ],
+  "manualControls": [
+    {
+      "id": "manual-baseline",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 2,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected == 1",
+            "rows": 1
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "expected-answer.rq",
+            "id": "root:competency-questions:0001",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "0 rows, expected == 0",
+            "rows": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "manual-swap",
+      "outcome": "failed",
+      "competencyQuestions": {
+        "conforms": false,
+        "dormant": 1,
+        "executed": 2,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected == 1",
+            "rows": 1
+          },
+          {
+            "blocking": true,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "expected-answer.rq",
+            "id": "root:competency-questions:0001",
+            "metadataDiagnostics": [],
+            "ok": false,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected == 0",
+            "rows": 1
+          }
+        ]
+      }
+    }
+  ],
+  "checks": [
+    {
+      "id": "baseline",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected >= 0",
+            "rows": 1
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "strict-baseline",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected == 1",
+            "rows": 1
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "identical",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected >= 0",
+            "rows": 1
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "annotation",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected >= 0",
+            "rows": 1
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "addition",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "2 rows, expected >= 0",
+            "rows": 2
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "removal",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "0 rows, expected >= 0",
+            "rows": 0
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "swap",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected >= 0",
+            "rows": 1
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "strict-swap",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 1,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          },
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "executed",
+            "expectedToFail": false,
+            "file": "eligible.rq",
+            "id": "root:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": true,
+            "owner": {
+              "canonicalIri": "https://example.test/catalog-consumer",
+              "ownedIriPrefixes": [
+                "https://example.test/catalog-consumer#"
+              ],
+              "role": "root"
+            },
+            "reason": "1 rows, expected == 1",
+            "rows": 1
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "missing-suite",
+      "outcome": "passed",
+      "competencyQuestions": {
+        "conforms": true,
+        "dormant": 1,
+        "executed": 0,
+        "questions": [
+          {
+            "blocking": false,
+            "closes": null,
+            "execution": "dormant-dependency",
+            "expectedToFail": false,
+            "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+            "id": "dependency:0001:competency-questions:0000",
+            "metadataDiagnostics": [],
+            "ok": null,
+            "owner": {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            },
+            "reason": "dependency competency questions are loaded but execute only when their project is root",
+            "rows": null
+          }
+        ]
+      },
+      "reasoningOutcome": "decided",
+      "negativeOutcome": null
+    },
+    {
+      "id": "inconsistent",
+      "outcome": "failed",
+      "competencyQuestions": null,
+      "reasoningOutcome": "refused",
+      "negativeOutcome": {
+        "outcome": "refused",
+        "reason": "incomplete-certificate"
+      }
+    }
+  ],
+  "transitions": [
+    {
+      "id": "identical",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "added": [],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": []
+    },
+    {
+      "id": "identical",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "added": [],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": []
+    },
+    {
+      "id": "identical",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "added": [],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": []
+    },
+    {
+      "id": "annotation",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "added": [],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.1.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "5f8ed5bc0352e87998c72fa4cad5befd39eeb2239a34b1579442df612df0bef5"
+        }
+      ]
+    },
+    {
+      "id": "annotation",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "added": [],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.1.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "5f8ed5bc0352e87998c72fa4cad5befd39eeb2239a34b1579442df612df0bef5"
+        }
+      ]
+    },
+    {
+      "id": "annotation",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "added": [],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.1.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "5f8ed5bc0352e87998c72fa4cad5befd39eeb2239a34b1579442df612df0bef5"
+        }
+      ]
+    },
+    {
+      "id": "addition",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          },
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "819dd67dc9ddbe4ebe9ff673b84e8d0e292a2abe6dc6f319ebe0916c7a41b600"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.2.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "d9ef9570316bb1ad095713db3daba2d34be6e5edfb1c2b7a924a69df914bb2c1"
+        }
+      ]
+    },
+    {
+      "id": "addition",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          },
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "819dd67dc9ddbe4ebe9ff673b84e8d0e292a2abe6dc6f319ebe0916c7a41b600"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.2.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "d9ef9570316bb1ad095713db3daba2d34be6e5edfb1c2b7a924a69df914bb2c1"
+        }
+      ]
+    },
+    {
+      "id": "addition",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          },
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "819dd67dc9ddbe4ebe9ff673b84e8d0e292a2abe6dc6f319ebe0916c7a41b600"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.2.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "d9ef9570316bb1ad095713db3daba2d34be6e5edfb1c2b7a924a69df914bb2c1"
+        }
+      ]
+    },
+    {
+      "id": "removal",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [],
+        "sha256": "787d699c60ed85ab2ade9d440604773c3e86cc3b811ded2948f42a3561506f89"
+      },
+      "added": [],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.3.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "29f8fabbb9132cc5a3c9b7186c45a3afc013b6d2d177caebe17f222f77267a1d"
+        }
+      ]
+    },
+    {
+      "id": "removal",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [],
+        "sha256": "787d699c60ed85ab2ade9d440604773c3e86cc3b811ded2948f42a3561506f89"
+      },
+      "added": [],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.3.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "29f8fabbb9132cc5a3c9b7186c45a3afc013b6d2d177caebe17f222f77267a1d"
+        }
+      ]
+    },
+    {
+      "id": "removal",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "satisfied",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [],
+        "sha256": "787d699c60ed85ab2ade9d440604773c3e86cc3b811ded2948f42a3561506f89"
+      },
+      "added": [],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.3.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "29f8fabbb9132cc5a3c9b7186c45a3afc013b6d2d177caebe17f222f77267a1d"
+        }
+      ]
+    },
+    {
+      "id": "swap",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "swap",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "swap",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "strict-swap",
+      "baseline": "strict-baseline",
+      "policy": "preserve",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "strict-swap",
+      "baseline": "strict-baseline",
+      "policy": "no-loss",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "strict-swap",
+      "baseline": "strict-baseline",
+      "policy": "no-gain",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": false,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "missing-suite",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": true,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "missing-suite",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": true,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "missing-suite",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "violated",
+      "reason": null,
+      "beforeCheck": "passed",
+      "afterCheck": "passed",
+      "beforeAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-a"
+            }
+          }
+        ],
+        "sha256": "59be25fa65d20e87f36d3ab82f2818dbd0f28400ef19c8cfed973e102d8d9f41"
+      },
+      "afterAnswers": {
+        "form": "select",
+        "variables": [
+          "resource"
+        ],
+        "bindings": [
+          {
+            "resource": {
+              "kind": "iri",
+              "value": "https://example.test/catalog-consumer#item-b"
+            }
+          }
+        ],
+        "sha256": "f29260be56365c3288f58ba86d41c7ccda81c12940b88610d2e04ead7b2cc993"
+      },
+      "added": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-b"
+          }
+        }
+      ],
+      "removed": [
+        {
+          "resource": {
+            "kind": "iri",
+            "value": "https://example.test/catalog-consumer#item-a"
+          }
+        }
+      ],
+      "questionSuiteChanged": true,
+      "dependencyChanges": [
+        {
+          "canonicalIri": "https://example.test/catalog",
+          "beforeVersion": "1.0.0",
+          "afterVersion": "1.4.0",
+          "beforeArchiveSha256": "c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00",
+          "afterArchiveSha256": "a780999e4ad4d91844225a0eeb4942444b2ddd465ab9c92cd70eb56fb21866d1"
+        }
+      ]
+    },
+    {
+      "id": "inconsistent",
+      "baseline": "baseline",
+      "policy": "preserve",
+      "status": "indeterminate",
+      "reason": "both-projects-must-pass",
+      "beforeCheck": "passed",
+      "afterCheck": "failed",
+      "beforeAnswers": null,
+      "afterAnswers": null,
+      "added": null,
+      "removed": null,
+      "questionSuiteChanged": null,
+      "dependencyChanges": []
+    },
+    {
+      "id": "inconsistent",
+      "baseline": "baseline",
+      "policy": "no-loss",
+      "status": "indeterminate",
+      "reason": "both-projects-must-pass",
+      "beforeCheck": "passed",
+      "afterCheck": "failed",
+      "beforeAnswers": null,
+      "afterAnswers": null,
+      "added": null,
+      "removed": null,
+      "questionSuiteChanged": null,
+      "dependencyChanges": []
+    },
+    {
+      "id": "inconsistent",
+      "baseline": "baseline",
+      "policy": "no-gain",
+      "status": "indeterminate",
+      "reason": "both-projects-must-pass",
+      "beforeCheck": "passed",
+      "afterCheck": "failed",
+      "beforeAnswers": null,
+      "afterAnswers": null,
+      "added": null,
+      "removed": null,
+      "questionSuiteChanged": null,
+      "dependencyChanges": []
+    }
+  ],
+  "nativeDoctorPassed": true,
+  "offlineEquivalent": true,
+  "baselineSources": {
+    "citationRoots": [],
+    "files": [
+      {
+        "contentDigest": "sha256:e4d63df95b1416fd0b1e734544bfaed2f72d89caa4e599f7e9a8a4fcdbe6f4f7",
+        "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+        "id": "dependency:0001:competency-questions:0000",
+        "stage": "competency-questions"
+      },
+      {
+        "contentDigest": "sha256:16d5da611ef912bf8a32f85e2c2d3346dddcd63b6e1ad8b2a917009e6bbe48b1",
+        "file": "eligible.rq",
+        "id": "root:competency-questions:0000",
+        "stage": "competency-questions"
+      },
+      {
+        "contentDigest": "sha256:57398e2424e943a0e0a215481f6cf124faa43f894562e3cf06c28b9475706ad0",
+        "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/ontology.ttl",
+        "graphHash": "sha256:93213ce069f0fa35d7ad40e99c7e10c17b177ff2e4a1da08d3e3b61494296b38",
+        "id": "dependency:0001:ontology:0000",
+        "mediaType": "text/turtle",
+        "parser": "n3@2.1.1",
+        "stage": "ontology"
+      },
+      {
+        "contentDigest": "sha256:6c94c5bc8aa01a6b3b073040b3cbb65fe9278fe782ed0146b0d605b1d485442a",
+        "file": "dependencies/c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00/ontology.ttl",
+        "graphHash": "sha256:b402ff7f361c48167d0ca67d105c6377ae605a071aad830369e4533b21ef0b33",
+        "id": "dependency:0000:ontology:0000",
+        "mediaType": "text/turtle",
+        "parser": "n3@2.1.1",
+        "stage": "ontology"
+      },
+      {
+        "contentDigest": "sha256:17b46b0b7c6d0cb6687babc9cbe932100a85b08214f119aa432d678ccb98d019",
+        "file": "ontology.ttl",
+        "graphHash": "sha256:a3317a8983d8279b0669731a6a8572758816c0930823eedf290f81a0086d59c4",
+        "id": "root:ontology:0000",
+        "mediaType": "text/turtle",
+        "parser": "n3@2.1.1",
+        "stage": "ontology"
+      },
+      {
+        "contentDigest": "sha256:af52ddb3983059bb22540e343f5336db2e8b8c1b8b47e45f7dcc8d5799312f4c",
+        "file": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/shapes.ttl",
+        "id": "dependency:0001:shapes:0000",
+        "stage": "shapes"
+      }
+    ],
+    "selectors": [
+      {
+        "id": "dependency:0001:competency-questions-selector:0000",
+        "kind": "file",
+        "selector": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/dependency-question.rq",
+        "stage": "competency-questions"
+      },
+      {
+        "id": "root:competency-questions-selector:0000",
+        "kind": "file",
+        "selector": "eligible.rq",
+        "stage": "competency-questions"
+      },
+      {
+        "id": "dependency:0000:ontology-selector:0000",
+        "kind": "file",
+        "selector": "dependencies/c6716bb2b999b370e99b1445aaeb7a579069c5eef66e9e5cba4326fe07631d00/ontology.ttl",
+        "stage": "ontology"
+      },
+      {
+        "id": "dependency:0001:ontology-selector:0000",
+        "kind": "file",
+        "selector": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/ontology.ttl",
+        "stage": "ontology"
+      },
+      {
+        "id": "root:ontology-selector:0000",
+        "kind": "file",
+        "selector": "ontology.ttl",
+        "stage": "ontology"
+      },
+      {
+        "id": "dependency:0001:shapes-selector:0000",
+        "kind": "file",
+        "selector": "dependencies/b5152decc2076a1ffccbb752b35be13e1466c97b9b0db53a2a865a916f9b2179/shapes.ttl",
+        "stage": "shapes"
+      }
+    ]
+  },
+  "baselineReasoning": {
+    "completeness": "Completeness checked at qualification, not on this run: each listed inference was proved and checked here; that none is missing rests on the reasoner release qualification.",
+    "consistency": "consistent",
+    "diagnostics": [],
+    "inferred": [
+      {
+        "contributingOwners": [
+          {
+            "canonicalIri": "https://example.test/catalog",
+            "ownedIriPrefixes": [
+              "https://example.test/catalog#"
+            ],
+            "role": "dependency"
+          },
+          {
+            "canonicalIri": "https://example.test/catalog-consumer",
+            "ownedIriPrefixes": [
+              "https://example.test/catalog-consumer#"
+            ],
+            "role": "root"
+          }
+        ],
+        "contributingSourceIds": [
+          "dependency:0000:ontology:0000",
+          "root:ontology:0000"
+        ],
+        "id": "inferred:1",
+        "justificationDigest": "sha256:771b2a4a7662dc52f771ae778a8b169199f311be38d61e61a90bf323e54998af",
+        "object": "https://example.test/common#EligibleResource",
+        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "premiseIds": [
+          "axiom:2274dcc8e7a4465d10a3b63706f04fe84cea06c62ce4eab735d15645f119d4a4",
+          "axiom:412dd486914ef63832ee32245b1e4ee49118b9f6f2a48df0348e9deb41a83797"
+        ],
+        "rule": "subclass-type",
+        "subject": "https://example.test/catalog-consumer#item-a"
+      },
+      {
+        "contributingOwners": [
+          {
+            "canonicalIri": "https://example.test/catalog",
+            "ownedIriPrefixes": [
+              "https://example.test/catalog#"
+            ],
+            "role": "dependency"
+          },
+          {
+            "canonicalIri": "https://example.test/common",
+            "ownedIriPrefixes": [
+              "https://example.test/common#"
+            ],
+            "role": "dependency"
+          },
+          {
+            "canonicalIri": "https://example.test/catalog-consumer",
+            "ownedIriPrefixes": [
+              "https://example.test/catalog-consumer#"
+            ],
+            "role": "root"
+          }
+        ],
+        "contributingSourceIds": [
+          "dependency:0000:ontology:0000",
+          "dependency:0001:ontology:0000",
+          "root:ontology:0000"
+        ],
+        "id": "inferred:2",
+        "justificationDigest": "sha256:b9c426fc2bb02ead16d47c9e44ce248b91eaf1abdd377b50dad115004ddf37cf",
+        "object": "https://example.test/common#Resource",
+        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "premiseIds": [
+          "axiom:27187026a490cb2e9335a8f72404ff518a64d53ff74817f816ee0e2facbb0d19",
+          "inferred:1"
+        ],
+        "rule": "subclass-type",
+        "subject": "https://example.test/catalog-consumer#item-a"
+      },
+      {
+        "contributingOwners": [
+          {
+            "canonicalIri": "https://example.test/catalog",
+            "ownedIriPrefixes": [
+              "https://example.test/catalog#"
+            ],
+            "role": "dependency"
+          },
+          {
+            "canonicalIri": "https://example.test/catalog-consumer",
+            "ownedIriPrefixes": [
+              "https://example.test/catalog-consumer#"
+            ],
+            "role": "root"
+          }
+        ],
+        "contributingSourceIds": [
+          "dependency:0000:ontology:0000",
+          "root:ontology:0000"
+        ],
+        "id": "inferred:3",
+        "justificationDigest": "sha256:7c14db62539a0e588767d7d315f380a241255d5d1c933faf112375c8205160bc",
+        "object": "https://example.test/common#Resource",
+        "predicate": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "premiseIds": [
+          "axiom:7032cb85462f9eba91209031db03384018b441b7e039fe71b93ffc667d06cf96",
+          "axiom:8ccd26a21dcf6522022d166bd897934ed27973aaa09bd2db7c6ce779c08fed44"
+        ],
+        "rule": "subclass-type",
+        "subject": "https://example.test/catalog-consumer#item-b"
+      }
+    ],
+    "inferredStatementCount": 3,
+    "inputAxiomCount": 10,
+    "inputDigest": "sha256:99097484431f8385543e3467455ec22d30921bb950892a022d578d24d5201021",
+    "limits": {
+      "maxInferences": 100000,
+      "maxInputAxioms": 100000,
+      "maxRequestBytes": 16777216,
+      "maxWallTimeMs": 30000
+    },
+    "materializedStatementCount": 3,
+    "negativeOutcome": null,
+    "outcome": "decided",
+    "profile": {
+      "digest": "sha256:ff36438e2500497ed8dc8b955cf7033c9bed781495c214793c0ba6859bbede5f",
+      "id": "erden-required-constructs-v2"
+    },
+    "protocolVersion": 1,
+    "requestId": "request:99097484431f8385543e3467455ec22d30921bb950892a022d578d24d5201021",
+    "tool": {
+      "adapterDigest": "sha256:b923a50baa9b12d132a5d3088d7cc5ee54b6a3b8ade1a2126027720ace476001",
+      "calculusDigest": "sha256:fc444990f8c8c180df359a6beca8811fa3f4f2382f590fcb2f2a56957c19529c",
+      "executableDigest": "sha256:59cc42b3098f22691152babb76683d5d1edf6a15da0583e9c0885c0eee536bbb",
+      "name": "erden-reasoner",
+      "version": "0.3.0+purrdf.0.12.0.dfb1df7"
+    },
+    "unsatisfiableClasses": []
+  },
+  "baselineShapeResults": {
+    "details": {
+      "conforms": true,
+      "counts": {
+        "info": 0,
+        "violation": 0,
+        "warning": 0
+      },
+      "engine": {
+        "engineDigest": "sha256:026b0ef70f4bd68cbe0fff535b8287eb804825c057f46cc116ae1f2087b427cc",
+        "executableDigest": "sha256:c50d84c18c3587adfc9ddcd76052030c15d55370b13237e9aa947e2a63122b1e",
+        "name": "erden-shacl",
+        "version": "0.1.0+purrdf.3.0.1"
+      },
+      "findings": [],
+      "selfTest": [
+        {
+          "fired": true,
+          "reason": null,
+          "shape": "https://example.test/common#EligibleResourceShape"
+        }
+      ],
+      "shapes": [
+        {
+          "owners": [
+            {
+              "canonicalIri": "https://example.test/common",
+              "ownedIriPrefixes": [
+                "https://example.test/common#"
+              ],
+              "role": "dependency"
+            }
+          ],
+          "resultCount": 0,
+          "shape": "https://example.test/common#EligibleResourceShape",
+          "sourceIds": [
+            "dependency:0001:shapes:0000"
+          ],
+          "targetCount": 1,
+          "targetKind": "targetClass",
+          "targetTerm": "https://example.test/common#EligibleResource"
+        }
+      ],
+      "sourceDigests": [
+        {
+          "contentDigest": "sha256:af52ddb3983059bb22540e343f5336db2e8b8c1b8b47e45f7dcc8d5799312f4c",
+          "sourceId": "dependency:0001:shapes:0000"
+        }
+      ]
+    },
+    "failureCodes": [],
+    "status": "passed"
+  },
+  "inheritedShapeChecked": true,
+  "dependencyInferenceAttributed": true,
+  "rootQuestionsExecuted": 1,
+  "dependencyQuestionsDormant": 1,
+  "repeatPackSha256": "cbdfe82c788d4aa01341ed2d508407efe1cb7096bbf705310c20a4a235f5174a",
+  "fixtureIndex": "fixture-index.json",
+  "scope": "Bounded controlled integration demonstration, not a performance benchmark or general compatibility proof."
+}

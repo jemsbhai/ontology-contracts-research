@@ -1,0 +1,130 @@
+ERDEN CONSUMER QUERY TRANSITIONS -- IMPLEMENTATION SCOPE
+2026-11-02
+
+Purpose
+Introduce an Erden-native workflow for inspecting how two checked project
+snapshots affect an existing consumer's competency questions. The motivating
+case is an ontology dependency upgrade while the root's data and requirements
+remain fixed. The command is read-only and does not publish or approve upgrades.
+
+CLI
+  erden transition <before-project> <after-project>
+      [--policy preserve|no-loss|no-gain] [--json]
+
+The baseline project's root questions are the fixed consumer contract. They
+are evaluated on both materialized graphs even if the candidate edits or
+removes its own questions. Existing per-project checks still run normally.
+
+Assessment
+  preserve: answer sets are equal for every selected query.
+  no-loss: every baseline answer remains in the candidate set.
+  no-gain: every candidate answer was present in the baseline set.
+These are established set relations, not new algorithms. SELECT results use
+typed RDF-term binding SET semantics; duplicate multiplicity and row ordering
+are outside this contract. ASK is represented explicitly. Query text, rendered
+text and input/query bindings are recorded. Never compare display samples.
+
+Failed semantic checks, an empty suite, unsupported query semantics, incomplete
+results, blank-node outputs, unreasoned inputs, changed consumer identity, or
+incompatible profile/toolchain produce indeterminate, never a passing contract.
+The precise query fragment and resource bounds are recorded by the comparator.
+These bounds cover the added answer-comparison stage; inherited ordinary checks
+run first with their existing execution behavior. Missing/unreadable projects,
+invalid locks and other operational failures produce command errors (exit 3),
+not indeterminate JSON reports. Semantic violated/indeterminate reports exit 1.
+
+Identity and interpretation
+Capture the exact materialized graph, root questions, report, manifest hash,
+and lock only from a passed native check, after dependency-state recheck.
+Bind both report/input/source sets and exact dependency closure identities.
+Report whether root source identities and the candidate's question suite changed.
+This distinguishes dependency-only trials from general project transitions.
+
+The result concerns these materialized graphs under Erden's admitted profile
+and qualification assumptions. It is not a proof of general OWL equivalence,
+query inseparability, or compatibility for every possible application/query.
+
+Evaluation controls
+Actual Erden package encode/install/update and native reasoner+SHACL checks:
+unchanged snapshots; annotation-only update; added answer; removed answer;
+constant-cardinality replacement; candidate weakened/deleted question suite;
+and a failed candidate. Compare ordinary check outcomes, root query counts,
+fixed-suite typed deltas and three directional policies. Include meaningful
+identity/unknown tests. Data are controlled system scenarios, not application
+traffic or production adoption evidence.
+
+Attribution and paper framing
+Erden's existing local toolchain is inherited, Apache-2.0 infrastructure and
+is attributed to the upstream project. The added transition workflow is the
+new implementation in this study. ROBOT/ODK, OntoMaven, VoCol and Ontohub
+already cover substantial relevant ground; novelty is evaluated as a systems
+integration and demonstrated workflow contribution, not first package manager,
+first ontology CI, first query regression test, or first semantic diff.
+
+FINAL REAL-RELEASE EVIDENCE REFINEMENTS -- 2026-11-01
+
+Exact graph encoding
+encodeQuestionTransitionGraph exports the same bounded default graph encoding
+used by the comparator, including deterministic source-blank-node remapping.
+QuestionTransitionReport.datasets is null when both graphs cannot be encoded;
+otherwise it records before/after SHA256, quadCount and byteSize. These are
+encoded input identities, retained even if admission prevents worker execution.
+They are byte identities, not graph-isomorphism canonicalization or a claim
+that every encoded graph reached the query engine.
+
+Historical literal admission correction (1 November, retained evidence)
+The pinned engine normalizes numeric, boolean, calendar and duration lexical
+forms and selected datatype identities. The original comparator could therefore
+misreport term preservation; retained adverse controls demonstrate this. The
+1 November version returns indeterminate/normalizing-literal-input if either entire
+input graph contains an XSD datatype other than xsd:string. This includes
+canonical values and literals irrelevant to selected questions. Plain strings,
+language-tagged literals and opaque non-XSD datatypes remain admitted.
+Queries refuse typed-literal syntax (^^), STRDT, and numeric constants except
+canonical integers (0 or an optionally negative nonzero-leading digit string).
+Positive sign, leading zeroes, negative zero, decimals and exponent constants
+are refused. Existing deterministic numeric-producing expressions can remain
+admitted. The boundary deliberately sacrifices coverage instead of silently
+changing the contract to value-normalized equality. No worker, reasoner,
+SHACL, native qualification or policy identity was weakened.
+
+External evaluation
+real-release/ contains all eight original distribution screens and intermediate
+failed fragments, final BOT/Brick installed runs, typed ROBOT API comparisons,
+an independent full BOT ROBOT/HermiT workflow, and the QUDT external tutorial
+query on an explicitly unreasoned fragment. Dataset/projection provenance,
+same-graph vs different-reasoning scope and negative outcomes are separate.
+The selected releases and query anchors precede observed deltas; later
+adaptations respond to support diagnostics and retain earlier failures.
+
+EXACT-TERM ROUTE -- 2026-11-02
+
+The comparator now handles normalization-sensitive graph/query literals through
+an injective opaque literal encoding, after any native reasoning and checking.
+Every literal is represented by a JSON tuple of lexical form, datatype IRI and
+lowercase language tag under urn:erden:question-transition:opaque-literal:v1.
+All literals, including existing uses of this datatype, receive one encoding;
+outputs receive one decode. IRI identity and within-graph blank nodes remain.
+
+This route admits variable-projection SELECT/ASK, basic graph patterns, property
+paths, UNION, OPTIONAL, MINUS and VALUES; FILTER admits only sameTerm and BOUND
+with Boolean combinations. Literal constants receive the same encoding. It
+refuses value equality, arithmetic, type/string introspection, term construction,
+ORDER, subqueries, aggregation, named graphs, SERVICE and user limits. The
+existing direct nonnumeric route remains; the new preservation argument applies
+only to the encoded fragment, not to every legacy deterministic expression.
+
+Top-level datasets hashes still identify original exported graphs. Per-question
+execution records encoding version, actual engine query SHA256 (including the
+internal row sentinel LIMIT), and exact engine graph SHA256/bytes/quad counts.
+encodeQuestionTransitionGraph(graph, 'opaque-literal/v1') exports encoded bytes.
+Original and encoded graph/query bounds are enforced. Complete decoded results
+remain required; unsupported terms, blank-node outputs and limits remain
+indeterminate. Native reasoner/SHACL identities and project gates are unchanged.
+
+strengthening/ contains the new frozen independent Mortar selector study,
+synthetic adversarial controls, original-byte ROBOT/Jena same-term baseline,
+actual previous-runtime refusal ablation and exact-term execution evidence.
+These are explicit query-stage replays on asserted RDF unions. They are NOT
+successful native checks of full Brick/Mortar projects or complete import
+closures, and do not establish production application breakage or savings.

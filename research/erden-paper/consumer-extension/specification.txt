@@ -1,0 +1,103 @@
+ERDEN STATEFUL CONSUMER TRANSITION CONTRACTS, VERSION 1
+
+Purpose
+A successful fresh installation does not establish that a consumer survives an
+upgrade retaining its old interpretation cache, or a rollback retaining a newer
+cache. This extension makes those states explicit executable obligations. It
+adds a local consumer lifecycle to Erden without silently weakening the native
+OWL/check/transition pipeline. The previous unsupported native inputs remain
+unsupported; this is a new declared execution contract.
+
+Contract and source selection
+The caller supplies erden.consumer-plan/v1. A revision names a complete local
+source directory, original unittest file, working directory, full test classes
+and exact expected Class.method identities. Every regular source-tree file is
+captured. There is no include/exclude filter that silently drops inconvenient
+RDF, code or test files. Clean external source snapshots must be prepared before
+locking. Source selection itself is caller-owned: a tool cannot establish that
+an arbitrary application's authors selected every necessary external input.
+
+Resources have an ID, HTTP(S) URI and optional aliases, an exact local backing
+file and a relative application-cache path. A plan may contain versions sharing
+a cache alias, but one arm cannot assign two resources to that alias or URL.
+Every resource declared for a successful arm must actually be observed by the
+instrumented transport or cache path. Arbitrary dynamic network access refuses.
+
+An ordered arm selects a revision, desired interpretation resources and policy:
+- empty: start without cached files; the unchanged consumer can request pinned
+  responses and populate its own cache;
+- seed: prepare exactly the specified resource versions;
+- inherit: copy the ACTUAL cache produced by a named earlier arm.
+observe runs the original oracle despite a known cache mismatch, records it and
+never reports that mismatch as a passing interpretation. enforce rejects a known
+wrong cached version before execution. Missing files in a cold cache can be
+downloaded from the pinned transport. Repair is a separate seeded arm, never a
+silent mutation of an adverse arm.
+
+Lifecycle
+consumer lock captures the exact plan bytes, complete revision inventories,
+resource bytes, interpreter executable and bundled adapter identity.
+consumer pack validates that lock and serializes a bounded local capsule with
+the original plan and locked source/resource bytes.
+consumer install validates the capsule before creating a NEW destination.
+consumer run validates inputs, creates isolated copies and actual inherited
+caches, invokes the versioned Python adapter, and retains raw observations and
+per-test outcomes. It checks source identity after execution.
+consumer verify checks a retained run against the caller's unchanged plan/lock.
+Existing paths are not overwritten by these operations. Resources, source paths
+and installed paths cannot escape through traversal, symlinks or ambiguous names.
+The Python executable and dependencies are external runtime prerequisites, not
+included in the local capsule. This version does not publish consumer capsules
+to the ontology registry or reinterpret native ontology packages as Python code.
+
+Evidence obligations
+The report must cover precisely the declared ordered arms and preserve their
+revision, source, resource, cache-parent and policy bindings. A completed original
+test run must discover and execute precisely its expected test identities.
+Missing, duplicate, skipped or unexpected tests cannot establish success. A
+preflight refusal is an evaluated refusal, not an executed test suite. The raw
+runner records and retained source/cache bytes must agree with the aggregate.
+An invalid or incomplete evidence bundle is different from a complete bundle
+showing a regression. Successful evidence verification does not mean the upgrade
+passed its consumer contract.
+
+Python adapter and trusted boundary
+The adapter imports the unchanged original test module, uses standard unittest
+discovery/execution, and captures ordinary test output. It provides the declared
+bytes through urllib and requests HTTP transport hooks. The application loader,
+JSON-LD parser, reconciliation and serialization code are not substituted.
+Python audit observations identify declared cache-file reads and writes; socket
+and subprocess attempts are rejected by the instrumentation. Bounded execution
+and output handling apply. This is not a hostile-code sandbox and cannot observe
+every native-extension I/O path. Arbitrary malicious tests could forge observations;
+the runner, runtime and original oracle are trusted.
+
+The executable hash is locked. Runtime reports record installed distribution
+metadata and hashes of observed Python module files. These are useful identity
+checks, not a complete OS/native-library closure or a historical hermetic build.
+SHA256 records bind evidence bytes; they are not signed attestations that an
+untrusted producer actually executed the application. The verifier checks finite
+declared-state coverage and consistency under this explicit trusted-runner boundary.
+It proves neither all possible runtime-state coverage nor OWL/query completeness.
+
+Research validation
+The initial real case is CodeMetaPy's public CodeMeta 2-to-3 migration:
+https://github.com/proycon/codemetapy/commit/77ad052e4d6d87c1a8f50b2bd09c4e6eb6085594
+Its original JSON-LD workflow covers parsing, graph reconciliation, ordered lists
+and serialization. The complete original JSON test classes have 16 predecessor
+tests and 32 successor tests. This does not claim execution of every other
+CodeMetaPy importer or every test in its repository. The acquired source and
+context snapshots are checked against authoritative Git blob identities.
+
+The prospective cohort includes cold predecessor, cache-inheriting successor,
+cold successor, cache-inheriting rollback, enforced stale-cache refusal, explicit
+repair, and a fresh repeat. These are controlled state replays around a real
+public update, not identified deployed incidents. Previously observed numeric
+outcomes do not define success criteria for newly executed states.
+
+Strong baselines receive the same plan, source, resources, original tests and
+cache-state information. An independently implemented manifest-driven runner
+and verifier may match detection and diagnosis. Such agreement is validation of
+the implementation, not a unique-detection or algorithmic novelty claim. Measure
+complete lifecycle behavior, evidence failures and execution cost honestly. Any
+paper claim must follow the resulting comparative evidence and independent review.
