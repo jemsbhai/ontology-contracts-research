@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { BigIntStats } from 'node:fs';
 import type { FileHandle } from 'node:fs/promises';
 import { basename, dirname, isAbsolute, join, parse, relative, resolve, sep } from 'node:path';
+import { setTimeout as delay } from 'node:timers/promises';
 
 import { Context, Effect } from 'effect';
 
@@ -3685,10 +3686,50 @@ async function putPackagePromise(
         signal.throwIfAborted();
         const finalRoot = objectPath(storeRoot, expected.archiveSha256);
         let renameError: unknown;
-        try {
-            await operations.rename(stageRoot, finalRoot);
-        } catch (error) {
-            renameError = error;
+        for (let attempt = 0; ; attempt += 1) {
+            signal.throwIfAborted();
+            try {
+                await operations.rename(stageRoot, finalRoot);
+                renameError = undefined;
+                break;
+            } catch (error) {
+                renameError = error;
+            }
+            // Windows access/sharing errors may clear shortly. Never retry another publication protocol or
+            // infer success from an error code: a move that threw still goes through final-object verification.
+            if (
+                operations.platform !== 'win32' ||
+                !['EPERM', 'EACCES', 'EBUSY'].includes(errorCode(renameError) ?? '') ||
+                attempt >= 3
+            ) {
+                break;
+            }
+            await recheckDirectoryRoot(operations, storeRoot, storeRootIdentity);
+            await recheckDirectoryRoot(operations, objectsRoot, objectsRootIdentity);
+            if (
+                (await lstatOrNull(operations, finalRoot)) !== null ||
+                (await lstatOrNull(operations, stageRoot)) === null
+            ) {
+                break;
+            }
+            await delay(50 * 2 ** attempt, undefined, { signal });
+            await recheckDirectoryRoot(operations, storeRoot, storeRootIdentity);
+            await recheckDirectoryRoot(operations, objectsRoot, objectsRootIdentity);
+            if (
+                (await lstatOrNull(operations, finalRoot)) !== null ||
+                (await lstatOrNull(operations, stageRoot)) === null
+            ) {
+                break;
+            }
+            await assertNoPortableSibling(operations, objectsRoot, stageName, true, 'STORE_ROLLBACK_UNSAFE');
+            await assertNoPortableSibling(operations, objectsRoot, finalName, false);
+            await verifyObjectAt(operations, stageRoot, expected.archiveSha256, expected, toolchain);
+            if (!(await pathTreeMatchesOwned(operations, stageRoot, owned))) {
+                throw new LocalPackageStoreError(
+                    'STORE_ROLLBACK_UNSAFE',
+                    'The package object stage ownership changed before publication retry',
+                );
+            }
         }
         try {
             await verifyObjectAt(operations, finalRoot, expected.archiveSha256, expected, toolchain);

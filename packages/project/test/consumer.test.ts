@@ -23,11 +23,15 @@ const roots: string[] = [];
 const pythonCommand =
     process.env['ERDEN_CONSUMER_TEST_PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
 const python = execFileSync(pythonCommand, ['-c', 'import sys;print(sys.executable)'], { encoding: 'utf8' }).trim();
-afterEach(async () => {
+afterEach(async ({ task }) => {
     for (const root of roots.splice(0)) {
         const absolute = resolve(root);
         if (!absolute.startsWith(resolve(tmpdir())) || !absolute.includes('erden-consumer-lifecycle-')) {
             throw new Error('Unsafe test cleanup');
+        }
+        if (task.result?.state === 'fail') {
+            console.error(`Failed consumer fixture preserved for diagnosis: ${absolute}`);
+            continue;
         }
         await rm(absolute, { recursive: true, force: true });
     }

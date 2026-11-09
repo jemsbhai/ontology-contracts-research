@@ -455,11 +455,14 @@ def main():
                         "url": None, "path": path, "sha256": file_digest(path) if os.path.isfile(path) else None})
             distributions = set()
             for distribution in importlib.metadata.distributions():
-                name = distribution.metadata.get("Name")
+                # Keep name and version from one snapshot; .version reparses METADATA on each access.
+                metadata = distribution.metadata
+                name = metadata.get("Name")
                 if name:
-                    if len(name) > 1024 or len(distribution.version) > 1024 or len(distributions) >= MAX_EVENTS:
+                    version = metadata.get("Version")
+                    if len(name) > 1024 or len(version) > 1024 or len(distributions) >= MAX_EVENTS:
                         raise ValueError("Distribution observation bound exceeded")
-                    distributions.add((name, distribution.version))
+                    distributions.add((name, version))
             report["runtime"]["distributions"] = [{"name": n, "version": v} for n, v in sorted(distributions)]
             module_files = set()
             for module in list(sys.modules.values()):

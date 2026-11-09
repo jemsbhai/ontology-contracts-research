@@ -51,6 +51,8 @@ export function nodeStoreEnvironment(): StoreEnvironment {
 }
 
 export interface StoreNodeOperations {
+    /** Optional for custom ports; only the native Windows port retries object-publication sharing errors. */
+    readonly platform?: NodeJS.Platform;
     readonly lstat: typeof fs.lstat;
     readonly mkdir: typeof fs.mkdir;
     readonly open: typeof fs.open;
@@ -86,6 +88,7 @@ export interface StoreNodeOperations {
 }
 
 const nodeStoreOperations: StoreNodeOperations = Object.freeze({
+    platform: process.platform,
     lstat: fs.lstat,
     mkdir: fs.mkdir,
     open: fs.open,

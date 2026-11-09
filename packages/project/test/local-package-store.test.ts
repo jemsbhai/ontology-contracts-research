@@ -14,6 +14,7 @@ import {
     makeLocalPackageStore,
     makeInstalledClosureReader,
     makeNodeStoreFileSystemPort,
+    type StoreNodeOperations,
 } from '../src/index.js';
 
 function digest(character: string): string {
@@ -148,6 +149,24 @@ describe('LocalPackageStore', () => {
             cleanupTestTempRoot(root);
         }
     });
+
+    function publicationFixture(overrides: Partial<StoreNodeOperations>) {
+        const root = makeTestTempRoot('erden-store-publication-');
+        roots.push(root);
+        const { a, lock } = fixture();
+        const expected = lock.packages[0];
+        if (expected === undefined) {
+            throw new Error('fixture package');
+        }
+        const storeRoot = join(root, 'store');
+        const service = makeLocalPackageStore(makeNodeStoreFileSystemPort({ platform: 'win32', ...overrides }));
+        return {
+            storeRoot,
+            expected,
+            service,
+            input: { storeRoot, expected, toolchain: lock.toolchain, archive: a.archiveBytes },
+        };
+    }
 
     it('ingests, verifies, materializes, and resolves an exact transitive lock offline', async () => {
         const root = makeTestTempRoot('erden-store-');
@@ -659,7 +678,7 @@ describe('LocalPackageStore', () => {
         ).resolves.toMatchObject({ status: 'missing' });
     });
 
-    it('reconciles a final object rename that moved and then threw', async () => {
+    it.each(['EIO', 'EPERM'])('reconciles a final object rename that moved and then threw %s', async (code) => {
         const root = makeTestTempRoot('erden-store-');
         roots.push(root);
         const storeRoot = join(root, 'store');
@@ -669,9 +688,12 @@ describe('LocalPackageStore', () => {
             throw new Error('fixture package');
         }
         let injected = false;
+        let attempts = 0;
         const service = makeLocalPackageStore(
             makeNodeStoreFileSystemPort({
+                platform: 'win32',
                 rename: async (source, destination) => {
+                    attempts += 1;
                     await fs.rename(source, destination);
                     if (
                         !injected &&
@@ -679,7 +701,7 @@ describe('LocalPackageStore', () => {
                         String(destination).endsWith(expected.archiveSha256)
                     ) {
                         injected = true;
-                        throw Object.assign(new Error('moved then threw'), { code: 'EIO' });
+                        throw Object.assign(new Error('moved then threw'), { code });
                     }
                 },
             }),
@@ -687,9 +709,209 @@ describe('LocalPackageStore', () => {
         await expect(
             Effect.runPromise(service.put({ storeRoot, expected, toolchain: lock.toolchain, archive: a.archiveBytes })),
         ).resolves.toMatchObject({ status: 'stored' });
+        expect(attempts).toBe(1);
         await expect(
             Effect.runPromise(service.inspect({ storeRoot, archiveSha256: expected.archiveSha256 })),
         ).resolves.toMatchObject({ status: 'available' });
+    });
+
+    it.each(['EPERM', 'EACCES', 'EBUSY'])('retries a Windows object publication after temporary %s', async (code) => {
+        let attempts = 0;
+        const f = publicationFixture({
+            rename: async (source, destination) => {
+                attempts += 1;
+                if (attempts <= 2) {
+                    throw Object.assign(new Error('injected sharing denial'), { code });
+                }
+                await fs.rename(source, destination);
+            },
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).resolves.toMatchObject({ status: 'stored' });
+        expect(attempts).toBe(3);
+        await expect(
+            Effect.runPromise(f.service.inspect({ storeRoot: f.storeRoot, archiveSha256: f.expected.archiveSha256 })),
+        ).resolves.toMatchObject({ status: 'available' });
+        expect(await fs.readdir(join(f.storeRoot, 'objects'))).toEqual([f.expected.archiveSha256]);
+    });
+
+    it.each([
+        ['win32', 'EPERM', 4],
+        ['win32', 'EACCES', 4],
+        ['win32', 'EBUSY', 4],
+        ['win32', 'EIO', 1],
+        ['win32', 'ENOSPC', 1],
+        ['win32', 'EXDEV', 1],
+        ['linux', 'EPERM', 1],
+    ] as const)('bounds failed publication attempts on %s for %s', async (platform, code, maximum) => {
+        let attempts = 0;
+        const failure = Object.assign(new Error('persistent publication failure'), { code });
+        const f = publicationFixture({
+            platform,
+            rename: () => {
+                attempts += 1;
+                return Promise.reject(failure);
+            },
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).rejects.toMatchObject({
+            code: 'STORE_IO_FAILURE',
+            cause: failure,
+        });
+        expect(attempts).toBe(maximum);
+        expect(await fs.readdir(join(f.storeRoot, 'objects'))).toEqual([]);
+    });
+
+    it('preserves final verification failure after a successful publication retry', async () => {
+        let attempts = 0;
+        let finalRoot = '';
+        let failedVerification = false;
+        const verificationFailure = Object.assign(new Error('final verification failure'), { code: 'EIO' });
+        const f = publicationFixture({
+            rename: async (source, destination) => {
+                attempts += 1;
+                if (attempts === 1) {
+                    throw Object.assign(new Error('sharing denial'), { code: 'EPERM' });
+                }
+                await fs.rename(source, destination);
+                finalRoot = String(destination);
+            },
+            open: async (path, flags, mode) => {
+                if (
+                    finalRoot &&
+                    !failedVerification &&
+                    String(path) === join(finalRoot, 'object.json') &&
+                    flags === 'r'
+                ) {
+                    failedVerification = true;
+                    throw verificationFailure;
+                }
+                return await fs.open(path, flags, mode);
+            },
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).rejects.toMatchObject({
+            code: 'STORE_IO_FAILURE',
+            cause: verificationFailure,
+        });
+        expect(attempts).toBe(2);
+        expect(failedVerification).toBe(true);
+        expect(await fs.readdir(join(f.storeRoot, 'objects'))).toEqual([]);
+    });
+
+    it('does not retry over a foreign destination that appears during the publication backoff', async () => {
+        let attempts = 0;
+        let destination = '';
+        let inspections = 0;
+        const f = publicationFixture({
+            rename: (_source, target) => {
+                attempts += 1;
+                destination = String(target);
+                return Promise.reject(Object.assign(new Error('sharing denial'), { code: 'EPERM' }));
+            },
+            lstat: (async (path, options) => {
+                if (destination && String(path) === destination && ++inspections === 2) {
+                    await fs.mkdir(destination);
+                    await fs.writeFile(join(destination, 'foreign.txt'), 'foreign destination');
+                }
+                return await fs.lstat(path, options);
+            }) as typeof fs.lstat,
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).rejects.toMatchObject({ code: 'STORE_IO_FAILURE' });
+        expect(attempts).toBe(1);
+        expect(await fs.readFile(join(destination, 'foreign.txt'), 'utf8')).toBe('foreign destination');
+        expect(await fs.readdir(join(f.storeRoot, 'objects'))).toEqual([f.expected.archiveSha256]);
+    });
+
+    it('does not publish or remove a replaced stage after a Windows publication failure', async () => {
+        let attempts = 0;
+        let stage = '';
+        let backup = '';
+        let inspections = 0;
+        const f = publicationFixture({
+            rename: (source) => {
+                attempts += 1;
+                stage = String(source);
+                return Promise.reject(Object.assign(new Error('sharing denial'), { code: 'EPERM' }));
+            },
+            lstat: (async (path, options) => {
+                if (stage && String(path) === stage && ++inspections === 2) {
+                    backup = `${stage}.original`;
+                    await fs.rename(stage, backup);
+                    await fs.mkdir(stage);
+                    await fs.writeFile(join(stage, 'foreign.txt'), 'foreign stage');
+                }
+                return await fs.lstat(path, options);
+            }) as typeof fs.lstat,
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).rejects.toBeInstanceOf(Error);
+        expect(attempts).toBe(1);
+        expect(await fs.readFile(join(stage, 'foreign.txt'), 'utf8')).toBe('foreign stage');
+        await expect(fs.access(join(backup, 'object.json'))).resolves.toBeUndefined();
+        await expect(fs.access(join(f.storeRoot, 'objects', f.expected.archiveSha256))).rejects.toBeDefined();
+    });
+
+    it('revalidates stage bytes before retrying a Windows object publication', async () => {
+        let attempts = 0;
+        let stage = '';
+        let inspections = 0;
+        const f = publicationFixture({
+            rename: (source) => {
+                attempts += 1;
+                stage = String(source);
+                return Promise.reject(Object.assign(new Error('sharing denial'), { code: 'EPERM' }));
+            },
+            lstat: (async (path, options) => {
+                if (stage && String(path) === stage && ++inspections === 2) {
+                    const ontology = join(stage, 'package', 'ontology', 'a.ttl');
+                    await fs.chmod(ontology, 0o644);
+                    await fs.writeFile(ontology, '<urn:changed> <urn:p> <urn:o> .\n');
+                }
+                return await fs.lstat(path, options);
+            }) as typeof fs.lstat,
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).rejects.toBeInstanceOf(Error);
+        expect(attempts).toBe(1);
+        await expect(fs.access(join(f.storeRoot, 'objects', f.expected.archiveSha256))).rejects.toBeDefined();
+    });
+
+    it('refuses publication retry through a replaced store root', async () => {
+        let attempts = 0;
+        let backup = '';
+        const f = publicationFixture({
+            rename: async (source) => {
+                attempts += 1;
+                const storeRoot = dirname(dirname(String(source)));
+                backup = `${storeRoot}.original`;
+                await fs.rename(storeRoot, backup);
+                await fs.mkdir(storeRoot);
+                await fs.writeFile(join(storeRoot, 'foreign.txt'), 'foreign root');
+                throw Object.assign(new Error('sharing denial'), { code: 'EPERM' });
+            },
+        });
+        await expect(Effect.runPromise(f.service.put(f.input))).rejects.toMatchObject({
+            code: 'STORE_ROOT_UNAVAILABLE',
+        });
+        expect(attempts).toBe(1);
+        expect(await fs.readFile(join(f.storeRoot, 'foreign.txt'), 'utf8')).toBe('foreign root');
+        expect((await fs.readdir(join(backup, 'objects'))).some((name) => name.includes('.stage-'))).toBe(true);
+    });
+
+    it('honors cancellation during Windows object-publication backoff', async () => {
+        let attempts = 0;
+        let observeFailure: (() => void) | undefined;
+        const failed = new Promise<void>((resolve) => {
+            observeFailure = resolve;
+        });
+        const f = publicationFixture({
+            rename: () => {
+                attempts += 1;
+                observeFailure?.();
+                return Promise.reject(Object.assign(new Error('sharing denial'), { code: 'EPERM' }));
+            },
+        });
+        const fiber = Effect.runFork(f.service.put(f.input));
+        await failed;
+        await Effect.runPromise(Fiber.interrupt(fiber));
+        expect(attempts).toBe(1);
+        expect(await fs.readdir(join(f.storeRoot, 'objects'))).toEqual([]);
     });
 
     it('rolls back an interrupted put observed during the final stage verification', async () => {

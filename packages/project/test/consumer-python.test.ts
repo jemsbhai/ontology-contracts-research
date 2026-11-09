@@ -62,6 +62,58 @@ function run(
 }
 
 describe('original Python unittest consumer adapter', () => {
+    it('records each distribution name and version from the same metadata snapshot', () => {
+        const result = run(
+            String.raw`
+import importlib.metadata, unittest
+class ChangingDistribution:
+    def __init__(self):
+        self.reads = 0
+    @property
+    def metadata(self):
+        self.reads += 1
+        return {"Name": "snapshot-" + str(self.reads), "Version": str(self.reads) + ".0"}
+    @property
+    def version(self):
+        return self.metadata["Version"]
+class Original(unittest.TestCase):
+    def test_snapshot(self):
+        distribution = ChangingDistribution()
+        importlib.metadata.distributions = lambda: [distribution]
+`,
+            ['Original'],
+            ['Original.test_snapshot'],
+        );
+        expect(result.fatalError).toBeNull();
+        expect(result.tests.map((test) => test.outcome)).toEqual(['passed']);
+        expect(result.runtime.distributions).toEqual([{ name: 'snapshot-1', version: '1.0' }]);
+    }, 40_000);
+
+    it.each(['Name', 'Version'])(
+        'retains the distribution %s size bound',
+        (field) => {
+            const result = run(
+                String.raw`
+import importlib.metadata, unittest
+class OversizedDistribution:
+    metadata = {"Name": "fixture", "Version": "1.0"}
+    metadata["${field}"] = "x" * 1025
+    @property
+    def version(self):
+        return self.metadata["Version"]
+class Original(unittest.TestCase):
+    def test_bound(self):
+        importlib.metadata.distributions = lambda: [OversizedDistribution()]
+`,
+                ['Original'],
+                ['Original.test_bound'],
+            );
+            expect(result.tests.map((test) => test.outcome)).toEqual(['passed']);
+            expect(result.fatalError).toContain('Distribution observation bound exceeded');
+        },
+        40_000,
+    );
+
     it('runs inherited full classes and pins both HTTP transports while observing cache bytes', () => {
         const result = run(
             String.raw`
