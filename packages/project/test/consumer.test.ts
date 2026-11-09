@@ -1,7 +1,8 @@
 import { execFileSync } from 'node:child_process';
+import { realpathSync } from 'node:fs';
 import { mkdtemp, mkdir, readFile, writeFile, rm, symlink, access } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
@@ -22,7 +23,10 @@ import { runConsumerProcess } from '../src/consumer/process.js';
 const roots: string[] = [];
 const pythonCommand =
     process.env['ERDEN_CONSUMER_TEST_PYTHON'] ?? (process.platform === 'win32' ? 'python' : 'python3');
-const python = execFileSync(pythonCommand, ['-c', 'import sys;print(sys.executable)'], { encoding: 'utf8' }).trim();
+// Interpreter discovery may return an alias; authored plans must name the canonical runtime file.
+const python = realpathSync(
+    execFileSync(pythonCommand, ['-c', 'import sys;print(sys.executable)'], { encoding: 'utf8' }).trim(),
+);
 afterEach(async ({ task }) => {
     for (const root of roots.splice(0)) {
         const absolute = resolve(root);
@@ -290,6 +294,17 @@ describe('consumer lifecycle (authored implementation fixtures, not external con
         await expect(
             consumerLock({ planPath: f.planPath, outputPath: join(f.root, 'linked-lock.json') }),
         ).rejects.toThrow('symbolic');
+    });
+
+    it('rejects a Python runtime path through a symbolic-link directory before writing a lock', async () => {
+        const f = await fixture();
+        const linkedRuntime = join(f.root, 'linked-runtime');
+        await symlink(dirname(python), linkedRuntime, process.platform === 'win32' ? 'junction' : 'dir');
+        await writeFile(f.planPath, canonicalJson({ ...f.plan, python: join(linkedRuntime, basename(python)) }));
+        await expect(consumerLock({ planPath: f.planPath, outputPath: f.lockPath })).rejects.toMatchObject({
+            code: 'CONSUMER_SYMLINK',
+        });
+        await expect(access(f.lockPath)).rejects.toThrow();
     });
 
     it('bounds direct-child wall time and combined output', async () => {
