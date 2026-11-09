@@ -26,6 +26,8 @@ jobs:
                   cache: pnpm
                   cache-dependency-path: pnpm-lock.yaml
             - run: pnpm run bootstrap:workspace
+            - name: Prepare isolated Python consumer test dependencies
+              run: node scripts/setup-consumer-test-python.mjs
             # The engine binaries are never committed. Each is built from source as its mint builds it (twice, in the
             # pinned builder image on Linux) and installed only when byte-identical to its pin; the cache holds the
             # verified erden-shacl binary per crate source, verified again before use.
@@ -72,6 +74,8 @@ jobs:
                   cache: pnpm
                   cache-dependency-path: pnpm-lock.yaml
             - run: pnpm run bootstrap:workspace
+            - name: Prepare isolated Python consumer test dependencies
+              run: node scripts/setup-consumer-test-python.mjs
             # erden-shacl from source, as in the Linux job: rustup 1.98.0 here, installed only if byte-identical to its pin.
             - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
               with:
@@ -107,6 +111,8 @@ jobs:
                   cache: pnpm
                   cache-dependency-path: pnpm-lock.yaml
             - run: pnpm run bootstrap:workspace
+            - name: Prepare isolated Python consumer test dependencies
+              run: node scripts/setup-consumer-test-python.mjs
             # erden-shacl from source, as in the Linux x64 job (the pinned arm64 builder image).
             - uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
               with:
