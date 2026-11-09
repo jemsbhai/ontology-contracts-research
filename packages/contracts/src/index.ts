@@ -7,3 +7,4 @@ export * from './device-login/index.js';
 export * from './artifact-files/index.js';
 export * from './release-comparison/index.js';
 export * from './release-query/index.js';
+export * from './consumer.js';

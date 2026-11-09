@@ -26,6 +26,7 @@
         "**/dist/**",
         "**/node_modules/**",
         "coverage/**",
+        "research/**",
         "packages/contracts/src/manifest/generated/**",
         "packages/project/test/fixtures/**",
         "reasoner/distribution/fixtures/**",

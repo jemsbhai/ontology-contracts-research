@@ -130,6 +130,12 @@ describe('erden CLI adapter', () => {
         ['missing config value', ['check', '--config']],
         ['excess check operands', ['check', 'one', 'two']],
         ['conflicting selectors', ['check', 'one', '--config', 'erden.config.json']],
+        ['missing transition operand', ['transition', 'one']],
+        ['excess transition operands', ['transition', 'one', 'two', 'three']],
+        ['invalid transition policy', ['transition', 'one', 'two', '--policy', 'anything']],
+        ['missing transition policy', ['transition', 'one', 'two', '--policy']],
+        ['duplicate transition json', ['transition', 'one', 'two', '--json', '--json']],
+        ['unknown transition flag', ['transition', 'one', 'two', '--wat']],
         ['missing init target', ['init']],
         ['duplicate init format', ['init', 'x', '--format', 'json', '--format', 'toml']],
         ['doctor operand', ['doctor', 'project']],
@@ -198,6 +204,22 @@ describe('erden CLI adapter', () => {
         expect(captured.stderr[0]).toContain('bad\\\\path\\n\\u001b\\u061c');
         expect(captured.stderr[0]).not.toContain('\u001b');
         expect(captured.stderr[0]).not.toContain('\u061c');
+    });
+
+    it('returns semantic failure and a scoped JSON report for a transition with no consumer suite', async () => {
+        const root = tempRoot();
+        const project = await initFixture(root);
+        const captured = captureRuntime(root);
+        expect(await runCli(['transition', project, project, '--json'], captured.runtime)).toBe(
+            CLI_EXIT.semanticFailure,
+        );
+        expect(captured.stderr).toEqual([]);
+        expect(JSON.parse(captured.stdout[0] ?? '')).toMatchObject({
+            schema: 'erden.project-transition/v1',
+            status: 'indeterminate',
+            reason: 'empty-baseline-question-suite',
+            compatibility: 'consumer-query-contract-only',
+        });
     });
 
     it('runs device login without exposing secrets and warns exactly before HTTP authentication', async () => {

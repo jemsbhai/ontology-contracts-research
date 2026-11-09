@@ -41,6 +41,10 @@ import {
     encodeInstallProjectReport,
     encodeProjectDependenciesReport,
     encodeProjectDependencyUpdateReport,
+    compareProjectTransition,
+    encodeProjectTransitionReport,
+    renderProjectTransitionReport,
+    type ProjectTransitionPolicy,
     encodeProjectPathReport,
     encodePackProjectReport,
     encodeStorePruneReport,
@@ -95,6 +99,7 @@ import {
     type ReasonerLimits,
 } from '@erden/project';
 
+import { runConsumerCommand, type CliConsumerRuntime } from './consumer.js';
 import { nodeCliQueryRuntime, runQueryCommand, type CliQueryRuntime } from './query.js';
 import {
     CliRegistryUsageError,
@@ -120,6 +125,8 @@ export const CLI_HELP = `Erden CLI: check, package, and publish ontologies (also
 Usage:
   erden init <dir> [--format <json|jsonc|yml|yaml|toml>] [--canonical-iri <iri>] [--alias <@scope/name>] [--owned-prefix <iri>]... [--json]
   erden check [project-dir] [--config <file>] [--offline] [--json]
+  erden transition <before-project> <after-project> [--policy preserve|no-loss|no-gain] [--json]
+  erden consumer <lock|pack|install|run|verify> ... [--json]
   erden install [project-dir] [--config <file>] [--offline] [--frozen-lockfile] [--json]
   erden add <identifier>@<range> [--config <file>] [--json]
   erden remove <identifier> [--config <file>] [--json]
@@ -174,6 +181,7 @@ export interface CliRuntime {
     readonly authentication?: CliAuthenticationRuntime;
     readonly publication?: CliPublicationRuntime;
     readonly query?: CliQueryRuntime;
+    readonly consumer?: CliConsumerRuntime;
     /** The process environment; only the documented `ERDEN_REASONER_MAX_*` settings are read from it. */
     readonly environment?: () => Readonly<Record<string, string | undefined>>;
 }
@@ -565,6 +573,63 @@ async function checkCommand(arguments_: ReadonlyArray<string>, runtime: CliRunti
                       'The project check could not complete',
                   );
         runtime.stderr.write(renderCheckProjectError(error));
+        return CLI_EXIT.operational;
+    }
+}
+
+async function transitionCommand(arguments_: ReadonlyArray<string>, runtime: CliRuntime): Promise<number> {
+    const positional: string[] = [];
+    const seen = new Set<string>();
+    let policy: ProjectTransitionPolicy = 'preserve';
+    let json = false;
+    for (let index = 0; index < arguments_.length; index += 1) {
+        const argument = arguments_[index] as string;
+        if (argument === '--json') {
+            markOnce(seen, argument);
+            json = true;
+        } else if (argument === '--policy') {
+            markOnce(seen, argument);
+            const value = requireValue(arguments_, index, argument);
+            if (value !== 'preserve' && value !== 'no-loss' && value !== 'no-gain') {
+                throw new CliUsageError('transition policy must be preserve, no-loss, or no-gain');
+            }
+            policy = value;
+            index += 1;
+        } else if (argument.startsWith('-')) {
+            throw new CliUsageError(`unknown transition flag: ${argument}`);
+        } else {
+            positional.push(argument);
+        }
+    }
+    if (positional.length !== 2) {
+        throw new CliUsageError('transition requires before and after project directories');
+    }
+    const limits = reasonerLimits(runtime);
+    try {
+        const report = await Effect.runPromise(
+            compareProjectTransition(
+                {
+                    before: { from: resolve(runtime.cwd(), positional[0] as string), reasonerLimits: limits },
+                    after: { from: resolve(runtime.cwd(), positional[1] as string), reasonerLimits: limits },
+                    policy,
+                },
+                runtime.services.check,
+            ),
+        );
+        runtime.stdout.write(json ? encodeProjectTransitionReport(report) : renderProjectTransitionReport(report));
+        return report.status === 'satisfied' ? CLI_EXIT.success : CLI_EXIT.semanticFailure;
+    } catch (cause) {
+        runtime.stderr.write(
+            renderCheckProjectError(
+                cause instanceof CheckProjectOperationalError
+                    ? cause
+                    : new CheckProjectOperationalError(
+                          'CHECK_OPERATION_FAILED',
+                          'validation',
+                          'The project transition could not complete',
+                      ),
+            ),
+        );
         return CLI_EXIT.operational;
     }
 }
@@ -1020,8 +1085,14 @@ export async function runCli(arguments_: ReadonlyArray<string>, runtime: CliRunt
         return CLI_EXIT.success;
     }
     try {
+        if (command === 'consumer') {
+            return await runConsumerCommand(arguments_.slice(1), runtime);
+        }
         if (command === 'check') {
             return await checkCommand(arguments_.slice(1), runtime);
+        }
+        if (command === 'transition') {
+            return await transitionCommand(arguments_.slice(1), runtime);
         }
         if (command === 'init') {
             return await initCommand(arguments_.slice(1), runtime);

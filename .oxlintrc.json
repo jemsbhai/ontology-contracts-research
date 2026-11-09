@@ -44,6 +44,7 @@
         "**/dist/**",
         "**/node_modules/**",
         "coverage/**",
+        "research/**",
         "packages/contracts/src/manifest/generated/**",
         "reasoner/qualification/**",
         "shacl/qualification/**"

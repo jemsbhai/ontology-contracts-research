@@ -14,3 +14,5 @@ export * from './store-maintenance/index.js';
 export * from './pack/index.js';
 export * from './operation.js';
 export * from './toolchain-guidance.js';
+export * from './transition/index.js';
+export * from './consumer/index.js';

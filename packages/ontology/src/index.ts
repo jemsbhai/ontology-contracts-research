@@ -17,3 +17,4 @@ export * from './comparison-rdf/index.js';
 export * from './shacl-evidence/index.js';
 export * from './validation-policy.js';
 export * from './release-query/index.js';
+export * from './question-transition/index.js';

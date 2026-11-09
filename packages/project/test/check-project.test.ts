@@ -34,6 +34,8 @@ import { encodePackage } from '@erden/package-format';
 import { cleanupTestTempRoot, makeTestTempRoot } from '../../../scripts/lib/test-temp-root.mjs';
 import {
     makeCheckProjectService,
+    compareProjectTransition,
+    encodeProjectTransitionReport,
     makeDependencyResolver,
     makeFixtureDependencyRegistry,
     makeInstalledClosureReader,
@@ -44,6 +46,7 @@ import {
     renderCheckProjectError,
     renderCheckProjectReport,
     type InstalledClosureReaderShape,
+    type CheckedProjectSemanticSnapshot,
 } from '../src/index.js';
 
 const tempRoots: string[] = [];
@@ -140,6 +143,123 @@ function nodeCheckService() {
         nodeReasonerService,
     );
 }
+
+describe('consumer query transitions', () => {
+    const question =
+        '# @ask Which members are eligible?\n# @expect rows == 1\n# @from Consumer contract.\nSELECT ?s WHERE { ?s a <https://example.test/root#B> }\n';
+    function eligible(member: string): string {
+        return `${PREFIXES} ex:A a owl:Class ; rdfs:subClassOf ex:B . ex:B a owl:Class . ex:${member} a ex:A .`;
+    }
+
+    it('delivers the actual checked snapshot after success and keeps the baseline suite when the candidate removes it', async () => {
+        const oldProject = writeProject({ ontology: eligible('alice'), question });
+        const newProject = writeProject({ ontology: eligible('bob') });
+        let snapshot: CheckedProjectSemanticSnapshot | undefined;
+        const checked = await Effect.runPromise(
+            nodeCheckService().check({
+                from: oldProject.root,
+                captureSemanticSnapshot: (value) =>
+                    Effect.sync(() => {
+                        snapshot = value;
+                    }),
+            }),
+        );
+        expect(snapshot?.report).toBe(checked);
+        expect(snapshot?.rootQuestions).toHaveLength(1);
+        expect(snapshot?.manifestSha256).toBe(
+            createHash('sha256').update(readFileSync(oldProject.manifestPath)).digest('hex'),
+        );
+        const report = await Effect.runPromise(
+            compareProjectTransition(
+                {
+                    before: { from: oldProject.root },
+                    after: { from: newProject.root },
+                },
+                nodeCheckService(),
+            ),
+        );
+        expect(report.before.check.outcome).toBe('passed');
+        expect(report.after.check.outcome).toBe('passed');
+        expect(report.status).toBe('violated');
+        expect(report.candidateQuestionSuiteChanged).toBe(true);
+        expect(report.rootSourcesChanged).toBe(true);
+        expect(report.answers?.questions[0]?.removed).toHaveLength(1);
+        expect(report.answers?.questions[0]?.added).toHaveLength(1);
+        expect(report.before.basis?.lockSha256).toMatch(/^[a-f0-9]{64}$/u);
+        expect(encodeProjectTransitionReport(report)).not.toContain(oldProject.root.replaceAll('\\', '/'));
+    });
+
+    it('distinguishes preserving, no-loss, and no-gain for an answer addition', async () => {
+        const permissive = question.replace('rows == 1', 'rows >= 0');
+        const oldProject = writeProject({ ontology: eligible('alice'), question: permissive });
+        const newProject = writeProject({ ontology: `${eligible('alice')} ex:bob a ex:A .`, question: permissive });
+        for (const [policy, expected] of [
+            ['preserve', 'violated'],
+            ['no-loss', 'satisfied'],
+            ['no-gain', 'violated'],
+        ] as const) {
+            const report = await Effect.runPromise(
+                compareProjectTransition(
+                    {
+                        before: { from: oldProject.root },
+                        after: { from: newProject.root },
+                        policy,
+                    },
+                    nodeCheckService(),
+                ),
+            );
+            expect(report.status).toBe(expected);
+            expect(report.answers?.questions[0]?.added).toHaveLength(1);
+            expect(report.answers?.questions[0]?.removed).toHaveLength(0);
+            expect(report.candidateQuestionSuiteChanged).toBe(false);
+        }
+    });
+
+    it('never reports satisfaction for a failed check or an empty baseline suite', async () => {
+        const oldProject = writeProject({ ontology: eligible('alice'), question });
+        const failedProject = writeProject({
+            ontology: eligible('bob'),
+            question: question.replace('rows == 1', 'rows == 2'),
+        });
+        let delivered = false;
+        await Effect.runPromise(
+            nodeCheckService().check({
+                from: failedProject.root,
+                captureSemanticSnapshot: () =>
+                    Effect.sync(() => {
+                        delivered = true;
+                    }),
+            }),
+        );
+        expect(delivered).toBe(false);
+        const failed = await Effect.runPromise(
+            compareProjectTransition(
+                {
+                    before: { from: oldProject.root },
+                    after: { from: failedProject.root },
+                },
+                nodeCheckService(),
+            ),
+        );
+        expect(failed).toMatchObject({ status: 'indeterminate', reason: 'both-projects-must-pass', answers: null });
+        expect(failed.after.basis).toBeNull();
+        const emptyProject = writeProject({ ontology: eligible('alice') });
+        const empty = await Effect.runPromise(
+            compareProjectTransition(
+                {
+                    before: { from: emptyProject.root },
+                    after: { from: oldProject.root },
+                },
+                nodeCheckService(),
+            ),
+        );
+        expect(empty).toMatchObject({
+            status: 'indeterminate',
+            reason: 'empty-baseline-question-suite',
+            answers: null,
+        });
+    });
+});
 
 async function runNodeProject(fixture: ProjectFixture, offline = true) {
     const project = writeProject(fixture);

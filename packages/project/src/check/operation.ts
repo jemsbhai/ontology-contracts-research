@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { basename, extname, isAbsolute, posix, relative, resolve } from 'node:path';
 
 import { Context, Effect } from 'effect';
@@ -124,6 +125,20 @@ export interface CheckProjectOptions {
     readonly reasonerLimits?: ReasonerLimits;
     /** Phase timing for measurement; absent, nothing is timed. */
     readonly timer?: CheckPhaseTimer;
+    /** Optional in-process consumer of a passed, revision-rechecked semantic snapshot. */
+    readonly captureSemanticSnapshot?: (
+        snapshot: CheckedProjectSemanticSnapshot,
+    ) => Effect.Effect<void, CheckProjectError>;
+}
+
+/** Exact captured input and materialization from one successful local check. */
+export interface CheckedProjectSemanticSnapshot {
+    readonly graph: ReasonedOntology;
+    readonly validation: OntologyCheckReport;
+    readonly report: CheckProjectReport;
+    readonly rootQuestions: ReadonlyArray<LoadedCompetencyQuestion>;
+    readonly manifestSha256: string;
+    readonly lock: LockfileV1;
 }
 
 function compareText(left: string, right: string): number {
@@ -2377,6 +2392,7 @@ function runCheckProject(
             })
             .pipe(Effect.mapError(projectLockError));
         const loaded = state.project;
+        let captured: CheckedProjectSemanticSnapshot | undefined;
         const body = Effect.gen(function* () {
             const lock = yield* requireAvailableLock(state.lockInspection, 'root', toolchain);
             let dependencyProjects: LoadedDependencyProjects = Object.freeze({
@@ -2429,18 +2445,33 @@ function runCheckProject(
                 .pipe(Effect.mapError((cause) => ontologyError(cause, 'sources', loaded.projectRoot)));
             const competencyQuestions = Object.freeze([...rootCompetencyQuestions, ...dependencyCompetencyQuestions]);
             options.timer?.mark('load');
-            return yield* runCheckProjectSemanticKernel({
-                loaded,
-                projects,
-                dataSources: Object.freeze([...rootDataSources, ...dependencyProjects.dataSources]),
-                shapeSources,
-                competencyQuestions,
-                ontologyService,
-                reasonerService,
-                limits: options.reasonerLimits ?? DEFAULT_REASONER_LIMITS,
-                toolchain,
-                ...(options.timer === undefined ? {} : { timer: options.timer }),
-            });
+            return yield* runCheckProjectSemanticKernel(
+                {
+                    loaded,
+                    projects,
+                    dataSources: Object.freeze([...rootDataSources, ...dependencyProjects.dataSources]),
+                    shapeSources,
+                    competencyQuestions,
+                    ontologyService,
+                    reasonerService,
+                    limits: options.reasonerLimits ?? DEFAULT_REASONER_LIMITS,
+                    toolchain,
+                    ...(options.timer === undefined ? {} : { timer: options.timer }),
+                },
+                options.captureSemanticSnapshot === undefined
+                    ? undefined
+                    : (graph, validation, report) =>
+                          Effect.sync(() => {
+                              captured = Object.freeze({
+                                  graph,
+                                  validation,
+                                  report,
+                                  rootQuestions: Object.freeze([...rootCompetencyQuestions]),
+                                  manifestSha256: createHash('sha256').update(state.manifestBytes).digest('hex'),
+                                  lock,
+                              });
+                          }),
+            );
         });
         return yield* Effect.matchEffect(body, {
             onFailure: (failure) =>
@@ -2449,9 +2480,14 @@ function runCheckProject(
                     Effect.flatMap(() => Effect.fail(failure)),
                 ),
             onSuccess: (report) =>
-                projectStateService
-                    .recheck({ revision: state.revision })
-                    .pipe(Effect.mapError(projectLockError), Effect.as(report)),
+                projectStateService.recheck({ revision: state.revision }).pipe(
+                    Effect.mapError(projectLockError),
+                    Effect.flatMap(() =>
+                        captured !== undefined && options.captureSemanticSnapshot !== undefined
+                            ? options.captureSemanticSnapshot(captured).pipe(Effect.as(report))
+                            : Effect.succeed(report),
+                    ),
+                ),
         });
     });
 }
