@@ -2,8 +2,8 @@
     "schema": "erden.open-tree-audit/v1",
     "description": "What scripts/audit-open-tree.mjs allows in the public repository: each allow entry is a file (or a directory ending in /), an expression the whole hit matches and the reason it is not private.",
     "identity": {
-        "name": "Ingenio Ventures Inc",
-        "email": "8313760+cbnsndwch@users.noreply.github.com"
+        "name": "Muntaser Syed",
+        "email": "jemsbhai@gmail.com"
     },
     "historyIdentityExceptions": [
         {
@@ -13,6 +13,14 @@
         {
             "sha": "e937a6ffc615b97723b27d3eeab60eef11e0d719",
             "reason": "a merged pull request from before the first release; public history is not rewritten"
+        },
+        {
+            "sha": "4e0196afddc6e776810795dc7d2ca6df99e5b90d",
+            "reason": "the published upstream first-release commit, preserved from https://github.com/cbnsndwch/erden/commit/4e0196afddc6e776810795dc7d2ca6df99e5b90d; public history is not rewritten"
+        },
+        {
+            "sha": "1dc6fd0530ab624054874668b9d8ad09bf84e1de",
+            "reason": "the published upstream registry fallback fix, preserved from https://github.com/cbnsndwch/erden/commit/1dc6fd0530ab624054874668b9d8ad09bf84e1de; public history is not rewritten"
         }
     ],
     "images": {
